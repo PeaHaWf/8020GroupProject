@@ -1,0 +1,43 @@
+{
+  "dataset": "night",
+  "input_dim": 9,
+  "hidden_size": 64,
+  "action_dim": 3,
+  "feature_mean": [
+    1.0089671604873729e-06,
+    1.0174709359489498e-06,
+    1.0075322052216507e-06,
+    1.009527409223665e-06,
+    8.601639933658589e-07,
+    0.00030187409720383584,
+    -0.011295103468000889,
+    0.00030098529532551765
+  ],
+  "feature_std": [
+    0.0005465276772156358,
+    0.0005634331610053778,
+    0.000542589754331857,
+    0.0005460225511342287,
+    0.0005468528252094984,
+    0.0004559196240734309,
+    1.0747836828231812,
+    0.00028624068363569677
+  ],
+  "train_config": {
+    "epochs": 1,
+    "group_size": 2,
+    "episode_steps": 256,
+    "learning_rate": 0.0003,
+    "entropy_coef": 0.01,
+    "max_grad_norm": 1.0,
+    "hidden_size": 64,
+    "seed": 42
+  },
+  "market_config": {
+    "contract_multiplier": 50.0,
+    "transaction_cost_per_contract": 10.0,
+    "slippage_points": 1.0,
+    "bars_per_year": 83160,
+    "initial_capital": 5000000.0
+  }
+}

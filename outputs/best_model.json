@@ -1,0 +1,11 @@
+{
+  "model": "night_model",
+  "dataset": "night_test",
+  "max_drawdown": -0.3061374326486108,
+  "sharpe_ratio": -8.743429315916567,
+  "log_return": -0.3595386749701315,
+  "total_pnl": -1510260.0,
+  "final_equity": 3489740.0,
+  "turnover": 21231.0,
+  "trace_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\trace_night_model_on_night_test.csv"
+}

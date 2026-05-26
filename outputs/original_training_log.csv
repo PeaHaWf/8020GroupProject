@@ -1,0 +1,2 @@
+dataset,epoch,loss,mean_group_return,std_group_return,validation_max_drawdown,validation_sharpe_ratio,validation_log_return,validation_total_pnl,validation_final_equity,validation_turnover
+original,1,0.598602294921875,-0.0027830000035464764,0.0006309999153017998,-0.9385096060624839,-25.56610587818073,-2.7856383780273832,-4691620.0,308380.0,78147.0

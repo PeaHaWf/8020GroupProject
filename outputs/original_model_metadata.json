@@ -1,0 +1,43 @@
+{
+  "dataset": "original",
+  "input_dim": 9,
+  "hidden_size": 64,
+  "action_dim": 3,
+  "feature_mean": [
+    5.510460709956533e-07,
+    5.457445695356e-07,
+    5.398333087214269e-07,
+    5.53140353076742e-07,
+    4.728240412532614e-07,
+    0.00031639033113606274,
+    -0.03863615542650223,
+    0.00044241046998649836
+  ],
+  "feature_std": [
+    0.00039561596349813044,
+    0.0003798496909439564,
+    0.0003674762265291065,
+    0.0004006441158708185,
+    0.00040087985689751804,
+    0.00024685257812961936,
+    1.1229051351547241,
+    0.00038421020144596696
+  ],
+  "train_config": {
+    "epochs": 1,
+    "group_size": 2,
+    "episode_steps": 256,
+    "learning_rate": 0.0003,
+    "entropy_coef": 0.01,
+    "max_grad_norm": 1.0,
+    "hidden_size": 64,
+    "seed": 42
+  },
+  "market_config": {
+    "contract_multiplier": 50.0,
+    "transaction_cost_per_contract": 10.0,
+    "slippage_points": 1.0,
+    "bars_per_year": 83160,
+    "initial_capital": 5000000.0
+  }
+}
