@@ -45,7 +45,7 @@ MAX_DAILY_DRAWDOWN_RATIO = 0.05    # 修改位置日内最大回撤限制 5%
 MAX_CONSECUTIVE_LOSSES = 5         # 连续亏损熔断次数
 VOL_TARGET_RATIO = 0.01            # 目标波动率（每笔交易）1%
 
-DATA_DIR = './data/'
+DATA_DIR = '../data/'
 
 
 # ============================================================
