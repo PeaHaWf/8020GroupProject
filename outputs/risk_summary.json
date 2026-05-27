@@ -1,8 +1,35 @@
 {
   "selected_model": "day_model",
   "selected_dataset": "day_test",
+  "risk_method": "dynamic_balanced",
   "initial_capital": 5000000.0,
+  "risk_config": {
+    "risk_per_trade": 0.005,
+    "max_contracts": 5,
+    "protective_drawdown": 0.08,
+    "kill_switch_drawdown": 0.12,
+    "stop_loss_risk_multiple": 1.0,
+    "take_profit_risk_multiple": 1.5,
+    "cooldown_bars": 20,
+    "volatility_lookback": 60,
+    "min_volatility_points": 20.0
+  },
   "metrics": {
+    "max_drawdown": -0.12037250294554236,
+    "sharpe_ratio": 3.4111694833710224,
+    "log_return": 0.2785805473777861,
+    "total_pnl": 1607190.0,
+    "final_equity": 6607190.0,
+    "turnover": 28816.0
+  },
+  "equity_curve_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_equity_curve.csv",
+  "trade_ledger_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_trade_ledger.csv",
+  "dynamic_equity_curve_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_equity_curve.csv",
+  "dynamic_trade_ledger_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_trade_ledger.csv",
+  "dynamic_summary_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_summary.json",
+  "comparison_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_comparison.csv",
+  "number_of_trades": 4188,
+  "static_baseline_metrics": {
     "max_drawdown": -0.12629279137160354,
     "sharpe_ratio": -0.8300431037124562,
     "log_return": -0.03142991934755124,
@@ -10,7 +37,5 @@
     "final_equity": 4845430.0,
     "turnover": 15407.0
   },
-  "equity_curve_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_equity_curve.csv",
-  "trade_ledger_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_trade_ledger.csv",
-  "number_of_trades": 7704
+  "static_baseline_trades": 7704
 }

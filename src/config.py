@@ -27,11 +27,26 @@ class MarketConfig:
 
 
 @dataclass(frozen=True)
-class TrainConfig:
-    """Small defaults keep the pipeline runnable on a laptop."""
+class RiskConfig:
+    """Balanced dynamic risk controls for model-driven live testing."""
 
-    epochs: int = 8
-    group_size: int = 4
+    risk_per_trade: float = 0.005
+    max_contracts: int = 5
+    protective_drawdown: float = 0.08
+    kill_switch_drawdown: float = 0.12
+    stop_loss_risk_multiple: float = 1.0
+    take_profit_risk_multiple: float = 1.5
+    cooldown_bars: int = 20
+    volatility_lookback: int = 60
+    min_volatility_points: float = 20.0
+
+
+@dataclass(frozen=True)
+class TrainConfig:
+    """Default training settings for the full experiment run."""
+
+    epochs: int = 30
+    group_size: int = 8
     episode_steps: int = 2048
     learning_rate: float = 3e-4
     entropy_coef: float = 0.01

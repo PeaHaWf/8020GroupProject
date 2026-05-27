@@ -27,6 +27,14 @@ For a quick smoke run:
 python scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
 ```
 
+The default training command uses the normal experiment setting in `src/config.py`: 30 epochs, group size 8, and 2048 steps per sampled episode.
+
+The risk management script now runs the balanced dynamic position sizing layer by default. You can override common risk parameters:
+
+```bash
+python scripts/risk_management.py --risk-per-trade 0.003 --max-contracts 3
+```
+
 ## Main Outputs
 
 - `data/split_summary.csv`
@@ -38,3 +46,7 @@ python scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
 - `outputs/risk_equity_curve.csv`
 - `outputs/risk_trade_ledger.csv`
 - `outputs/risk_summary.json`
+- `outputs/dynamic_risk_equity_curve.csv`
+- `outputs/dynamic_risk_trade_ledger.csv`
+- `outputs/dynamic_risk_summary.json`
+- `outputs/risk_comparison.csv`
