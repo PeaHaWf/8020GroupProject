@@ -66,7 +66,27 @@ def load_and_merge_data(dataset_type):
     print(f"[{dataset_type}] train+val: {len(merged)}, test: {len(test)}")
     return merged, test
 
+def load_validation_data(dataset_type):
+    """仅加载 validation set"""
+    val_path = os.path.join(DATA_DIR, f'{dataset_type}_validation.csv')
+    val = pd.read_csv(val_path)
+    val['datetime'] = pd.to_datetime(val['timestamp'])
+    val.sort_values('datetime', inplace=True)
+    val.reset_index(drop=True, inplace=True)
+    val['dataset'] = 'validation'
+    print(f"[{dataset_type}] validation: {len(val)} 条")
+    return val
 
+def load_train_data(dataset_type):
+    """仅加载 train set（不包含 validation）"""
+    train_path = os.path.join(DATA_DIR, f'{dataset_type}_train.csv')
+    train = pd.read_csv(train_path)
+    train['datetime'] = pd.to_datetime(train['timestamp'])
+    train.sort_values('datetime', inplace=True)
+    train.reset_index(drop=True, inplace=True)
+    train['dataset'] = 'train'
+    print(f"[{dataset_type}] train: {len(train)} 条")
+    return train
 # ============================================================
 # 2. 特征工程
 # ============================================================
@@ -423,6 +443,38 @@ def trade_log_count(positions):
     return np.sum(changes != 0)
 
 
+# ============================================================
+# 新增：用 validation set 进行模型选择
+# ============================================================
+def evaluate_on_validation(models, datasets):
+    """在 validation set 上评估5种场景，选出最佳模型"""
+    val_results = {}
+    print(f"\n{'=' * 80}")
+    print(" Validation Set 模型选择 (用于挑选最佳模型)")
+    print(f"{'=' * 80}")
+
+    scenarios = [
+        ('original_model on original_val', models['original'], 'original'),
+        ('original_model on day_val', models['original'], 'day'),
+        ('original_model on night_val', models['original'], 'night'),
+        ('day_model on day_val', models['day'], 'day'),
+        ('night_model on night_val', models['night'], 'night'),
+    ]
+
+    for name, model, ds_type in scenarios:
+        val_data = load_validation_data(ds_type)
+
+        val_feat = compute_features(val_data)  # 注意：这里要用 validation 数据
+        X_val = val_feat[get_feature_columns(val_feat)]
+        preds, pos, srets, cumrets, tlog, metrics = evaluate_on_test(model, X_val, val_feat, name)
+        val_results[name] = {'metrics': metrics,
+                             'score': metrics['Sharpe Ratio'] * 0.5 + metrics['Calmar Ratio'] * 0.3 + metrics[
+                                 'Profit Factor'] * 0.2}
+
+    # 挑选 validation 上最好的模型
+    best_name = max(val_results, key=lambda k: val_results[k]['score'])
+    print(f"\n ===> Validation 最佳模型: {best_name}")
+    return best_name, val_results
 def evaluate_on_test(model, X_test, df_test, scenario_name):
     """在测试集上评估模型"""
     predictions = model.predict(X_test)
@@ -452,72 +504,88 @@ def evaluate_on_test(model, X_test, df_test, scenario_name):
 
 def main():
     print("=" * 80)
-    print("  恒指期货 LGBM 模型训练与评估")
+    print(" 恒指期货 LGBM 模型训练与评估")
     print("=" * 80)
-    
+
     # --- 存储所有结果 ---
     all_models = {}
     all_params = {}
-    all_features = {}      # feature columns per dataset
+    all_features = {}
+    all_val_data = {}      # 新增：保存 validation 特征数据，用于后续模型选择
     all_test_data = {}
     all_test_features = {}
-    
-    # --- 每个数据集：加载、特征工程、CV、训练 ---
+
+    # ============================================================
+    # 第一阶段：分别对每个数据集进行训练（仅使用 train set）
+    # ============================================================
     for ds in ['original', 'day', 'night']:
         print(f"\n{'='*60}")
-        print(f"  处理 {ds.upper()} 数据集")
+        print(f" 处理 {ds.upper()} 数据集")
         print(f"{'='*60}")
-        
-        # 1. 加载合并
-        merged, test = load_and_merge_data(ds)
-        
-        # 2. 特征工程
-        print(f"  特征工程中...")
-        merged_feat = compute_features(merged)
+
+        # 1. 加载 train（仅 train，不再合并 val）
+        train = load_train_data(ds)
+        val = load_validation_data(ds)      # 你已经实现的函数
+        test = load_and_merge_data(ds)[1]   # 复用原有函数，只取 test 部分
+
+        # 2. 特征工程（分别处理）
+        print(f" 特征工程中...")
+        train_feat = compute_features(train)
+        val_feat = compute_features(val)
         test_feat = compute_features(test)
-        
-        feature_cols = get_feature_columns(merged_feat)
+
+        feature_cols = get_feature_columns(train_feat)
         all_features[ds] = feature_cols
-        
-        X_train_val = merged_feat[feature_cols]
-        y_train_val = merged_feat['target']
-        X_test = test_feat[feature_cols]
-        y_test = test_feat['target']
-        
+
+        X_train = train_feat[feature_cols]
+        y_train = train_feat['target']
+
+        all_val_data[ds] = val_feat                    # 保存 validation 用于模型选择
         all_test_data[ds] = test_feat
-        all_test_features[ds] = X_test
-        
-        print(f"  特征数: {len(feature_cols)}, 训练集: {len(X_train_val)}, 测试集: {len(X_test)}")
-        
-        # 3. K-fold CV 超参数筛选
-        best_params, cv_score = hyperparameter_tuning(X_train_val, y_train_val, ds)
+        all_test_features[ds] = test_feat[feature_cols]
+
+        print(f" 特征数: {len(feature_cols)}, "
+              f"训练集: {len(X_train)}, "
+              f"验证集: {len(val_feat)}, "
+              f"测试集: {len(test_feat)}")
+
+        # 3. K-fold CV 超参数筛选（只在 train 上做）
+        best_params, cv_score = hyperparameter_tuning(X_train, y_train, ds)
         all_params[ds] = best_params
-        
-        # 4. 训练最终模型
-        print(f"\n  训练最终模型...")
-        model = train_model(X_train_val, y_train_val, best_params, ds)
+
+        # 4. 仅使用 train 数据训练最终模型
+        print(f"\n 仅使用 train set 训练最终模型...")
+        model = train_model(X_train, y_train, best_params, ds)
         all_models[ds] = model
-    
-    # --- 测试集评估：5种场景 ---
+
+    # ============================================================
+    # 第二阶段：在 Validation Set 上进行模型选择（无 data snooping）
+    # ============================================================
     print(f"\n{'='*80}")
-    print(f"  测试集评估")
+    print(" Validation Set 模型选择（挑选最佳 scenario）")
     print(f"{'='*80}")
-    
+
+    best_model_name, val_results = evaluate_on_validation(all_models, all_val_data)
+    # 注意：evaluate_on_validation 需要你之前实现的版本，返回 (best_model_name, val_results)
+
+    # ============================================================
+    # 第三阶段：在 Test Set 上做最终 unbiased 评估
+    # ============================================================
+    print(f"\n{'='*80}")
+    print(" Test Set 最终评估（仅报告，不参与模型选择）")
+    print(f"{'='*80}")
+
     results = {}
-    
+    # 只评估 validation 选出的最佳模型在其对应测试集上的表现（推荐）
+    # 如果你想保留全部5种场景对比，也可以全部跑
     scenarios = [
-        ('original_model on original_test', all_models['original'],
-         all_test_features['original'], all_test_data['original']),
-        ('original_model on day_test', all_models['original'],
-         all_test_features['day'], all_test_data['day']),
-        ('original_model on night_test', all_models['original'],
-         all_test_features['night'], all_test_data['night']),
-        ('day_model on day_test', all_models['day'],
-         all_test_features['day'], all_test_data['day']),
-        ('night_model on night_test', all_models['night'],
-         all_test_features['night'], all_test_data['night']),
+        ('original_model on original_test', all_models['original'], all_test_features['original'], all_test_data['original']),
+        ('original_model on day_test', all_models['original'], all_test_features['day'], all_test_data['day']),
+        ('original_model on night_test', all_models['original'], all_test_features['night'], all_test_data['night']),
+        ('day_model on day_test', all_models['day'], all_test_features['day'], all_test_data['day']),
+        ('night_model on night_test', all_models['night'], all_test_features['night'], all_test_data['night']),
     ]
-    
+
     for name, model, X_t, df_t in scenarios:
         preds, pos, srets, cumrets, tlog, metrics = evaluate_on_test(model, X_t, df_t, name)
         results[name] = {
@@ -528,12 +596,12 @@ def main():
             'trade_log': tlog,
             'metrics': metrics,
         }
-    
-    # --- 比较分析 ---
+
+    # --- 比较分析（Test Set）---
     print(f"\n{'='*80}")
-    print(f"  模型比较分析")
+    print(" Test Set 模型比较分析（最终结果）")
     print(f"{'='*80}")
-    
+
     comparison = pd.DataFrame({
         name: {
             'Log Return': res['metrics']['Log Return'],
@@ -545,73 +613,33 @@ def main():
             'Profit Factor': res['metrics']['Profit Factor'],
             'Calmar Ratio': res['metrics']['Calmar Ratio'],
             'Total Trades': res['metrics']['Total Trades'],
-        }
-        for name, res in results.items()
+        } for name, res in results.items()
     }).T
-    
+
     print(comparison.to_string())
-    comparison.to_csv('model_comparison.csv')
-    print("\n  比较结果已保存至 model_comparison.csv")
-    
-    # --- 选择最佳模型 ---
-    # 综合考虑：Sharpe Ratio, Max Drawdown, Profit Factor
-    scores = {}
-    for name, res in results.items():
-        m = res['metrics']
-        # 综合评分（加权）：Sharpe > Calmar > Win Rate
-        score = (m['Sharpe Ratio'] * 0.4 + 
-                 m['Calmar Ratio'] * 0.3 + 
-                 m['Profit Factor'] * 0.2 + 
-                 m['Win Rate'] * 0.1)
-        scores[name] = score
-    
-    best_model_name = max(scores, key=scores.get)
-    print(f"\n  ===> 最佳模型: {best_model_name}")
-    print(f"  综合评分: {scores[best_model_name]:.4f}")
-    
-    # --- 保存最佳模型信息 ---
-    best_info = {
-        'best_model': best_model_name,
-        'scores': {k: float(v) for k, v in scores.items()},
-        'best_metrics': {k: float(v) if not isinstance(v, str) else v
-                         for k, v in results[best_model_name]['metrics'].items()},
-    }
-    
-    with open('best_model_info.json', 'w') as f:
-        json.dump(best_info, f, indent=2, default=str)
-    
-    print(f"\n  最佳模型信息已保存至 best_model_info.json")
-    
-    # --- 保存所有模型参数 ---
-    all_info = {
-        'transaction_cost_rate': TRANSACTION_COST_RATE,
-        'slippage_points': SLIPPAGE_POINTS,
-        'hsi_multiplier': HSI_MULTIPLIER,
-        'n_folds': N_FOLDS,
-        'params': {k: {pk: str(pv) if not isinstance(pv, (int, float, bool)) else pv
-                       for pk, pv in v.items()}
-                   for k, v in all_params.items()},
-        'feature_counts': {k: len(v) for k, v in all_features.items()},
-        'feature_lists': all_features,
-    }
-    
-    with open('all_model_params.json', 'w') as f:
-        json.dump(all_info, f, indent=2, default=str)
-    
-    print(f"\n  所有模型参数已保存至 all_model_params.json")
-    
-    # --- 保存最佳模型 ---
+    comparison.to_csv('model_comparison_test.csv', index=True)
+    print("\n Test 集比较结果已保存至 model_comparison_test.csv")
+
+    # --- 保存最佳模型（validation 上选出的）---
     if 'original' in best_model_name:
         best_model = all_models['original']
     elif 'day' in best_model_name:
         best_model = all_models['day']
     else:
         best_model = all_models['night']
-    
+
     import joblib
     joblib.dump(best_model, 'best_model.pkl')
-    print(f"  最佳模型已保存至 best_model.pkl")
-    
+    print(f"\n ===> Validation 选出的最佳模型已保存: {best_model_name}")
+    print(f" 最佳模型已保存至 best_model.pkl")
+
+    # 保存其他信息（可按需扩展）
+    with open('best_model_info.json', 'w') as f:
+        json.dump({
+            'best_model': best_model_name,
+            'val_scores': val_results
+        }, f, indent=2, default=str)
+
     return all_models, results, best_model_name
 
 

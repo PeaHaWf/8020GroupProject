@@ -1,23 +1,85 @@
 {
-  "best_model": "original_model on night_test",
-  "scores": {
-    "original_model on original_test": 74.9553411983102,
-    "original_model on day_test": 21.1502571500685,
-    "original_model on night_test": 78.41244530535502,
-    "day_model on day_test": 7.833300685693413,
-    "night_model on night_test": -1.9672993357850934
-  },
-  "best_metrics": {
-    "Log Return": 1.5764831369785326,
-    "Total Return": 3.837911585345293,
-    "Annualized Return": 19.751614476787935,
-    "Sharpe Ratio": 26.471463259971536,
-    "Max Drawdown": -0.08860136983383189,
-    "Win Rate": 0.4880029531192322,
-    "Profit Factor": 4.485189542715245,
-    "Calmar Ratio": 222.92673932503808,
-    "Avg Trade Return": 0.0006513339443674068,
-    "Total Trades": 3229.0,
-    "Avg Bars Per Day": 466.9236641221374
+  "best_model": "original_model on day_val",
+  "val_scores": {
+    "original_model on original_val": {
+      "metrics": {
+        "Log Return": -0.030563293549150748,
+        "Total Return": -0.030100958228245434,
+        "Annualized Return": -0.0475774797174513,
+        "Sharpe Ratio": -2.2776448472727613,
+        "Max Drawdown": -0.038091934464489,
+        "Win Rate": 0.4427860696517413,
+        "Profit Factor": 0.9173527086238482,
+        "Calmar Ratio": -1.2490171577346683,
+        "Avg Trade Return": -3.192630825432004e-05,
+        "Total Trades": "354",
+        "Avg Bars Per Day": 736.4556962025316
+      },
+      "score": -1.3300570292320113
+    },
+    "original_model on day_val": {
+      "metrics": {
+        "Log Return": -0.0060811594194245516,
+        "Total Return": -0.006062706593289224,
+        "Annualized Return": -0.010370694358362464,
+        "Sharpe Ratio": -0.5364759719118578,
+        "Max Drawdown": -0.01372476077174051,
+        "Win Rate": 0.5,
+        "Profit Factor": 1.0957531147970025,
+        "Calmar Ratio": -0.7556193168565736,
+        "Avg Trade Return": 4.507233062456401e-05,
+        "Total Trades": "150",
+        "Avg Bars Per Day": 372.99319727891157
+      },
+      "score": -0.27577315805350044
+    },
+    "original_model on night_val": {
+      "metrics": {
+        "Log Return": -0.03377211380833382,
+        "Total Return": -0.03320820196336993,
+        "Annualized Return": -0.058172940988811095,
+        "Sharpe Ratio": -5.388825554123988,
+        "Max Drawdown": -0.03330409014252889,
+        "Win Rate": 0.4012738853503185,
+        "Profit Factor": 0.6429536637531321,
+        "Calmar Ratio": -1.7467206201956857,
+        "Avg Trade Return": -9.448483323080888e-05,
+        "Total Trades": "276",
+        "Avg Bars Per Day": 430.7535211267606
+      },
+      "score": -3.0898382303700735
+    },
+    "day_model on day_val": {
+      "metrics": {
+        "Log Return": -0.15502529178008234,
+        "Total Return": -0.14360648250680352,
+        "Annualized Return": -0.23337509813993806,
+        "Sharpe Ratio": -2.6639097785041668,
+        "Max Drawdown": -0.16284395876814164,
+        "Win Rate": 0.43162393162393164,
+        "Profit Factor": 0.6858394691286561,
+        "Calmar Ratio": -1.4331210067928841,
+        "Avg Trade Return": -0.0005391791031307849,
+        "Total Trades": "400",
+        "Avg Bars Per Day": 372.99319727891157
+      },
+      "score": -1.6247232974642174
+    },
+    "night_model on night_val": {
+      "metrics": {
+        "Log Return": -0.8420867586619758,
+        "Total Return": -0.5691894129435726,
+        "Annualized Return": -0.7756184857300266,
+        "Sharpe Ratio": -11.34373732115596,
+        "Max Drawdown": -0.5868257978682833,
+        "Win Rate": 0.2887011313189174,
+        "Profit Factor": 0.5652922523841603,
+        "Calmar Ratio": -1.32171845298478,
+        "Avg Trade Return": -8.288360659141459e-05,
+        "Total Trades": "5368",
+        "Avg Bars Per Day": 430.7535211267606
+      },
+      "score": -5.955325745996581
+    }
   }
 }
