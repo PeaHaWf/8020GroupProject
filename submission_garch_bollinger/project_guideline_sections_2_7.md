@@ -137,9 +137,9 @@ On validation, the strongest selected momentum models are all `garch_bb_momentum
 
 | Parameter Dataset | Selected Momentum Variant | Validation Sharpe | Validation Return | Max DD | Turnover |
 |---|---|---:|---:|---:|---:|
-| day | garch_bb_momentum_volume | 3.08 | 0.77% | -0.08% | 14 |
-| night | garch_bb_momentum_volume | 2.21 | 3.87% | -1.48% | 147 |
-| original | garch_bb_momentum_volume | 1.64 | 3.04% | -1.35% | 124 |
+| day | garch_bb_momentum_volume | 3.03 | 0.75% | -0.09% | 14 |
+| night | garch_bb_momentum_volume | 2.09 | 3.64% | -1.49% | 147 |
+| original | garch_bb_momentum_volume | 1.56 | 2.20% | -0.56% | 21 |
 
 This suggests that during the validation period, band breaches with volume confirmation behaved more like breakouts than temporary mispricing. In plain terms, when price broke the band with stronger volume, following the move worked well on validation.
 
@@ -147,11 +147,11 @@ However, the directional out-of-sample tests show a different pattern. When the 
 
 | Params Source | Test Dataset | Momentum Variant | Momentum Sharpe | Momentum Return | Contrarian Variant | Contrarian Sharpe | Contrarian Return |
 |---|---|---|---:|---:|---|---:|---:|
-| original | original_test | garch_bb_momentum_volume | -1.15 | -3.78% | standard_bb_contrarian | 1.99 | 5.07% |
-| original | day_test | garch_bb_momentum_volume | -2.76 | -2.35% | standard_bb_contrarian | 2.25 | 1.47% |
-| original | night_test | garch_bb_momentum_volume | 0.28 | 0.64% | standard_bb_contrarian | 2.02 | 4.21% |
-| day | day_test | garch_bb_momentum_volume | 0.99 | 1.85% | garch_bb_contrarian_volume | 2.01 | 3.54% |
-| night | night_test | garch_bb_momentum_volume | 0.35 | 0.82% | standard_bb_contrarian | 2.02 | 4.21% |
+| original | original_test | garch_bb_momentum_volume | 0.41 | 0.59% | standard_bb_contrarian | 1.92 | 4.88% |
+| original | day_test | garch_bb_momentum_volume | 0.00 | 0.00% | standard_bb_contrarian | 2.24 | 1.47% |
+| original | night_test | garch_bb_momentum_volume | 0.34 | 0.40% | standard_bb_contrarian | 1.93 | 4.02% |
+| day | day_test | garch_bb_momentum_volume | 0.89 | 1.64% | garch_bb_contrarian_volume | 1.96 | 3.44% |
+| night | night_test | garch_bb_momentum_volume | 0.26 | 0.58% | standard_bb_contrarian | 1.93 | 4.02% |
 
 The main result is therefore not simply "momentum is best" or "contrarian is best". The more precise conclusion is:
 
@@ -230,7 +230,7 @@ strategy_return_t = executed_position_t * close_return_t - cost_return_t
 The default setting is:
 
 ```text
-cost_points_per_side = 0.6
+cost_points_per_side = 1.0
 ```
 
 This cost is deducted whenever the executed position changes. For example, moving from flat to long has turnover 1, and moving from long to short has turnover 2 because it closes the long and opens the short.

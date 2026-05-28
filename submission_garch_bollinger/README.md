@@ -26,8 +26,13 @@ Code files:
 
 - `outputs/data_used_summary.csv`: train/validation/test rows and date ranges.
 - `outputs/garch_model_params.csv`: fitted GARCH parameters.
+- `outputs/garch_bollinger_validation_grid.csv`: full validation grid search results.
 - `outputs/garch_bollinger_validation_selected_results.csv`: selected validation parameters and validation metrics.
 - `outputs/garch_bollinger_selected_params.csv`: compact selected parameter table.
 - `outputs/garch_bollinger_test_results.csv`: final out-of-sample test results.
+- `outputs/garch_bollinger_core_6_validation_selected.csv`: best validation parameters for `(original, day, night) x (momentum, contrarian)`.
+- `outputs/garch_bollinger_core_6_test_results.csv`: core 6 corresponding test results.
+- `outputs/garch_bollinger_directional_10_validation_selected.csv`: selected directional parameters including original parameters tested on day/night.
+- `outputs/garch_bollinger_directional_10_test_results.csv`: directional 10 test results.
 
-The backtest uses ratio returns only. It does not use initial capital, final equity, or wealth.
+The backtest uses ratio returns only. It does not use initial capital, final equity, or wealth. The default transaction cost is one index point per side.

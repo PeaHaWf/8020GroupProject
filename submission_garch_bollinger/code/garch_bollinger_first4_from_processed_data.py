@@ -44,7 +44,7 @@ DEFAULT_K_VALUES = (1.5, 2.0, 2.5)
 DEFAULT_MAX_HOLD_BARS = (5, 10, 20)
 DEFAULT_VOLUME_WINDOWS = (20, 40)
 DEFAULT_VOL_RATIOS = (0.8, 1.0, 1.2)
-DEFAULT_COST_POINTS_PER_SIDE = 0.6
+DEFAULT_COST_POINTS_PER_SIDE = 1.0
 
 
 def markdown_table(df: pd.DataFrame, float_digits: int = 4, max_rows: int | None = None) -> str:
