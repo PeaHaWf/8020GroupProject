@@ -100,21 +100,21 @@ Selected parameters and validation performance:
 
 | variant | data_used_for_params | bar_minutes | ma_window | k | max_hold_bars | volume_window | vol_ratio | validation_sharpe | turnover |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| standard_bb_contrarian | original | 15 | 20 | 2.5000 | 0 |  |  | 1.3565 | 119.0000 |
-| garch_bb_contrarian | original | 20 | 20 | 1.5000 | 0 |  |  | 0.4092 | 106.0000 |
-| garch_bb_momentum | original | 5 | 40 | 1.5000 | 20 |  |  | 0.9394 | 627.0000 |
-| garch_bb_contrarian_volume | original | 5 | 60 | 2.5000 | 0 | 40.0000 | 1.2000 | 0.3864 | 223.0000 |
-| garch_bb_momentum_volume | original | 15 | 20 | 2.5000 | 5 | 20.0000 | 1.0000 | 1.6353 | 124.0000 |
-| standard_bb_contrarian | day | 5 | 20 | 1.5000 | 0 |  |  | 0.4436 | 457.0000 |
-| garch_bb_contrarian | day | 5 | 20 | 2.5000 | 0 |  |  | 0.2742 | 326.0000 |
-| garch_bb_momentum | day | 5 | 40 | 2.5000 | 5 |  |  | 1.1323 | 44.0000 |
+| standard_bb_contrarian | original | 15 | 20 | 2.5000 | 0 |  |  | 1.2703 | 119.0000 |
+| garch_bb_contrarian | original | 20 | 20 | 1.5000 | 0 |  |  | 0.3292 | 106.0000 |
+| garch_bb_momentum | original | 5 | 60 | 2.0000 | 20 |  |  | 0.7372 | 295.0000 |
+| garch_bb_contrarian_volume | original | 5 | 60 | 2.5000 | 0 | 40.0000 | 1.2000 | 0.2631 | 223.0000 |
+| garch_bb_momentum_volume | original | 20 | 20 | 1.5000 | 10 | 20.0000 | 1.2000 | 1.5575 | 21.0000 |
+| standard_bb_contrarian | day | 5 | 20 | 2.5000 | 0 |  |  | 0.2649 | 187.0000 |
+| garch_bb_contrarian | day | 5 | 20 | 2.5000 | 0 |  |  | 0.1002 | 326.0000 |
+| garch_bb_momentum | day | 5 | 40 | 2.5000 | 5 |  |  | 0.9716 | 44.0000 |
 | garch_bb_contrarian_volume | day | 5 | 40 | 2.0000 | 0 | 20.0000 | 1.2000 | 1.3049 | 1.0000 |
-| garch_bb_momentum_volume | day | 5 | 20 | 1.5000 | 5 | 40.0000 | 0.8000 | 3.0833 | 14.0000 |
-| standard_bb_contrarian | night | 15 | 20 | 2.5000 | 0 |  |  | 1.1259 | 105.0000 |
-| garch_bb_contrarian | night | 20 | 20 | 1.5000 | 0 |  |  | 0.2632 | 104.0000 |
-| garch_bb_momentum | night | 5 | 60 | 2.0000 | 20 |  |  | 1.4323 | 255.0000 |
-| garch_bb_contrarian_volume | night | 5 | 20 | 2.0000 | 0 | 20.0000 | 1.2000 | 0.0738 | 627.0000 |
-| garch_bb_momentum_volume | night | 15 | 20 | 2.5000 | 5 | 20.0000 | 1.2000 | 2.2111 | 147.0000 |
+| garch_bb_momentum_volume | day | 5 | 20 | 1.5000 | 5 | 40.0000 | 0.8000 | 3.0333 | 14.0000 |
+| standard_bb_contrarian | night | 15 | 20 | 2.5000 | 0 |  |  | 1.0417 | 105.0000 |
+| garch_bb_contrarian | night | 20 | 20 | 1.5000 | 0 |  |  | 0.1816 | 104.0000 |
+| garch_bb_momentum | night | 5 | 60 | 2.0000 | 20 |  |  | 1.2972 | 255.0000 |
+| garch_bb_contrarian_volume | night | 20 | 20 | 1.5000 | 0 | 20.0000 | 0.8000 | -0.0255 | 46.0000 |
+| garch_bb_momentum_volume | night | 15 | 20 | 2.5000 | 5 | 20.0000 | 1.2000 | 2.0868 | 147.0000 |
 
 ## 4. Back-testing Results and Performance Characteristics / 回测结果与表现特征
 
@@ -132,46 +132,46 @@ Sharpe = mean(strategy_return_t) / std(strategy_return_t) * sqrt(periods_per_yea
 periods_per_year = average_test_bars_per_day * 252
 ```
 
-`cost_points_per_side = 0.6`. Sharpe uses dynamic `periods_per_year`, so 5/15/20-minute tests are not annualized with a 1-minute factor.
+`cost_points_per_side = 1.0`. Sharpe uses dynamic `periods_per_year`, so 5/15/20-minute tests are not annualized with a 1-minute factor.
 
 Test results below are final out-of-sample evaluations only. They are not used to choose the strategy or parameters.
 
 | variant | data_used_for_params | test_dataset | bar_minutes | ma_window | k | test_return | test_sharpe | max_dd | turnover |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| garch_bb_contrarian | day | day_test | 5 | 20 | 2.5000 | 0.0203 | 0.4920 | -0.0682 | 407.0000 |
-| garch_bb_contrarian | night | night_test | 20 | 20 | 1.5000 | 0.0135 | 0.8087 | -0.0247 | 114.0000 |
+| garch_bb_contrarian | day | day_test | 5 | 20 | 2.5000 | 0.0138 | 0.3474 | -0.0705 | 407.0000 |
+| garch_bb_contrarian | night | night_test | 20 | 20 | 1.5000 | 0.0118 | 0.7099 | -0.0254 | 114.0000 |
 | garch_bb_contrarian | original | day_test | 20 | 20 | 1.5000 | -0.0000 | -1.3612 | -0.0000 | 1.0000 |
-| garch_bb_contrarian | original | night_test | 20 | 20 | 1.5000 | 0.0077 | 0.4788 | -0.0275 | 99.0000 |
-| garch_bb_contrarian | original | original_test | 20 | 20 | 1.5000 | 0.0034 | 0.1861 | -0.0275 | 95.0000 |
-| garch_bb_contrarian_volume | day | day_test | 5 | 40 | 2.0000 | 0.0354 | 2.0115 | -0.0143 | 57.0000 |
-| garch_bb_contrarian_volume | night | night_test | 5 | 20 | 2.0000 | -0.0141 | -0.2807 | -0.0790 | 676.0000 |
-| garch_bb_contrarian_volume | original | day_test | 5 | 60 | 2.5000 | 0.0322 | 2.6095 | -0.0099 | 23.0000 |
-| garch_bb_contrarian_volume | original | night_test | 5 | 60 | 2.5000 | 0.0259 | 0.8212 | -0.0446 | 184.0000 |
-| garch_bb_contrarian_volume | original | original_test | 5 | 60 | 2.5000 | 0.0514 | 1.2545 | -0.0439 | 187.0000 |
-| garch_bb_momentum | day | day_test | 5 | 40 | 2.5000 | 0.0043 | 0.2396 | -0.0380 | 141.0000 |
-| garch_bb_momentum | night | night_test | 5 | 60 | 2.0000 | -0.0746 | -1.9372 | -0.1039 | 327.0000 |
-| garch_bb_momentum | original | day_test | 5 | 40 | 1.5000 | -0.0018 | -0.0536 | -0.0451 | 155.0000 |
-| garch_bb_momentum | original | night_test | 5 | 40 | 1.5000 | -0.0758 | -1.4975 | -0.1202 | 470.0000 |
-| garch_bb_momentum | original | original_test | 5 | 40 | 1.5000 | -0.0704 | -1.0571 | -0.1284 | 604.0000 |
-| garch_bb_momentum_volume | day | day_test | 5 | 20 | 1.5000 | 0.0185 | 0.9911 | -0.0193 | 125.0000 |
-| garch_bb_momentum_volume | night | night_test | 15 | 20 | 2.5000 | 0.0082 | 0.3482 | -0.0319 | 159.0000 |
-| garch_bb_momentum_volume | original | day_test | 15 | 20 | 2.5000 | -0.0235 | -2.7594 | -0.0294 | 9.0000 |
-| garch_bb_momentum_volume | original | night_test | 15 | 20 | 2.5000 | 0.0064 | 0.2803 | -0.0379 | 114.0000 |
-| garch_bb_momentum_volume | original | original_test | 15 | 20 | 2.5000 | -0.0378 | -1.1473 | -0.0708 | 118.0000 |
-| standard_bb_contrarian | day | day_test | 5 | 20 | 1.5000 | 0.0330 | 0.7655 | -0.0733 | 524.0000 |
-| standard_bb_contrarian | night | night_test | 15 | 20 | 2.5000 | 0.0421 | 2.0166 | -0.0209 | 126.0000 |
-| standard_bb_contrarian | original | day_test | 15 | 20 | 2.5000 | 0.0147 | 2.2518 | -0.0058 | 5.0000 |
-| standard_bb_contrarian | original | night_test | 15 | 20 | 2.5000 | 0.0421 | 2.0166 | -0.0209 | 126.0000 |
-| standard_bb_contrarian | original | original_test | 15 | 20 | 2.5000 | 0.0507 | 1.9890 | -0.0209 | 122.0000 |
+| garch_bb_contrarian | original | night_test | 20 | 20 | 1.5000 | 0.0062 | 0.3910 | -0.0281 | 99.0000 |
+| garch_bb_contrarian | original | original_test | 20 | 20 | 1.5000 | 0.0020 | 0.1151 | -0.0281 | 95.0000 |
+| garch_bb_contrarian_volume | day | day_test | 5 | 40 | 2.0000 | 0.0344 | 1.9595 | -0.0143 | 57.0000 |
+| garch_bb_contrarian_volume | night | night_test | 20 | 20 | 1.5000 | 0.0053 | 0.3677 | -0.0270 | 74.0000 |
+| garch_bb_contrarian_volume | original | day_test | 5 | 60 | 2.5000 | 0.0318 | 2.5807 | -0.0099 | 23.0000 |
+| garch_bb_contrarian_volume | original | night_test | 5 | 60 | 2.5000 | 0.0231 | 0.7375 | -0.0448 | 184.0000 |
+| garch_bb_contrarian_volume | original | original_test | 5 | 60 | 2.5000 | 0.0484 | 1.1863 | -0.0448 | 187.0000 |
+| garch_bb_momentum | day | day_test | 5 | 40 | 2.5000 | 0.0020 | 0.1234 | -0.0393 | 141.0000 |
+| garch_bb_momentum | night | night_test | 5 | 60 | 2.0000 | -0.0791 | -2.0603 | -0.1080 | 327.0000 |
+| garch_bb_momentum | original | day_test | 5 | 60 | 2.0000 | -0.0426 | -2.8423 | -0.0441 | 30.0000 |
+| garch_bb_momentum | original | night_test | 5 | 60 | 2.0000 | -0.0811 | -2.1479 | -0.1135 | 290.0000 |
+| garch_bb_momentum | original | original_test | 5 | 60 | 2.0000 | -0.1241 | -2.6712 | -0.1410 | 305.0000 |
+| garch_bb_momentum_volume | day | day_test | 5 | 20 | 1.5000 | 0.0164 | 0.8860 | -0.0197 | 125.0000 |
+| garch_bb_momentum_volume | night | night_test | 15 | 20 | 2.5000 | 0.0058 | 0.2562 | -0.0322 | 159.0000 |
+| garch_bb_momentum_volume | original | day_test | 20 | 20 | 1.5000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
+| garch_bb_momentum_volume | original | night_test | 20 | 20 | 1.5000 | 0.0040 | 0.3368 | -0.0145 | 27.0000 |
+| garch_bb_momentum_volume | original | original_test | 20 | 20 | 1.5000 | 0.0059 | 0.4119 | -0.0145 | 25.0000 |
+| standard_bb_contrarian | day | day_test | 5 | 20 | 2.5000 | 0.0065 | 0.2596 | -0.0544 | 204.0000 |
+| standard_bb_contrarian | night | night_test | 15 | 20 | 2.5000 | 0.0402 | 1.9270 | -0.0213 | 126.0000 |
+| standard_bb_contrarian | original | day_test | 15 | 20 | 2.5000 | 0.0147 | 2.2422 | -0.0058 | 5.0000 |
+| standard_bb_contrarian | original | night_test | 15 | 20 | 2.5000 | 0.0402 | 1.9270 | -0.0213 | 126.0000 |
+| standard_bb_contrarian | original | original_test | 15 | 20 | 2.5000 | 0.0488 | 1.9176 | -0.0213 | 122.0000 |
 
 Primary model selected by validation Sharpe:
 
 ```text
 variant = garch_bb_momentum_volume
 data_used_for_params = day
-validation_return = 0.007717
-validation_sharpe = 3.083307
-validation_max_dd = -0.000826
+validation_return = 0.007508
+validation_sharpe = 3.033290
+validation_max_dd = -0.000869
 turnover = 14.00
 ```
 
@@ -183,7 +183,7 @@ The test table is then used to report out-of-sample behavior of the validation-s
 
 Conditional volatility helps adapt band width under volatility clustering in this sample.
 
-Average Sharpe by test dataset: day_test=0.519, night_test=0.306, original_test=0.245. Day session is stronger on average; night may have lower liquidity or higher execution noise.
+Average Sharpe by test dataset: day_test=0.420, night_test=0.244, original_test=0.192. Day session is stronger on average; night may have lower liquidity or higher execution noise.
 
 Transaction cost effect: every position change pays `cost_points_per_side / close_(t-1)` on each side through turnover. Therefore high-turnover band settings can show attractive raw timing but weaker net ratio returns after costs. This is why validation selection uses Sharpe first, then less severe drawdown, then lower turnover.
 
