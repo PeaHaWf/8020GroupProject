@@ -187,7 +187,7 @@ def hyperparameter_tuning(X, y, dataset_name):
     best_score = np.inf
     best_params = param_grid[0]
     
-    print(f"\n  [{dataset_name}] 超参数搜索 (TimeSeriesSplit, {N_FOLDS}-fold)")
+    print(f"\n  [{dataset_name}] hyperparameter search (TimeSeriesSplit, {N_FOLDS}-fold)")
     print(f"  {'Param Set':<8} {'Fold RMSE':<60} {'Mean RMSE'}")
     print(f"  {'-'*8} {'-'*60} {'-'*12}")
     # grid search
@@ -464,7 +464,7 @@ def main():
 
     for ds in ['original', 'day', 'night']:
         print(f"\n{'='*60}")
-        print(f" 处理 {ds.upper()} 数据集")
+        print(f" process {ds.upper()} dataset")
         print(f"{'='*60}")
 
 
