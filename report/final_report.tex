@@ -25,7 +25,14 @@
 
 \title{\textbf{Quantitative Trading Strategy Report}\\
 \large LGBM, GRPO and GARCH-Bollinger Strategies on HSI Futures}
-\author{STAT8020 Quantitative Strategies and Algorithmic Trading}
+\author{
+\begin{tabular}{c}
+Jinting Liu \quad Student ID: 3036579758\underline{\hspace{3.5cm}} \\
+Junan Yao \quad Student ID: 3036514203 \underline{\hspace{3.5cm}} \\
+Zhenyu Yang \quad Student ID: 3036514095\underline{\hspace{3.5cm}} \\
+STAT8020 Quantitative Strategies and Algorithmic Trading
+\end{tabular}
+}
 \date{\today}
 
 \begin{document}
@@ -397,6 +404,17 @@ For GARCH-Bollinger, we first use the validation set to select the best momentum
 
 This table is the main GARCH-Bollinger finding. Momentum with volume confirmation had strong validation Sharpe, especially for day and night parameters, which suggests that the validation period rewarded breakout-style signals. However, in the final test period, contrarian rules delivered higher Sharpe ratios in all five directional settings. The result is therefore not simply that GARCH is always better than standard Bollinger Bands, or that momentum is always worse than contrarian trading. A more precise interpretation is that the validation period behaved more like a breakout environment, while the test period, especially late 2019 to early 2020, was more favorable to mean reversion after band breaches.
 
+To provide a direct passive benchmark, Figure~\ref{fig:bah-strategy-comparison} compares the cumulative test-period performance of the three strategy lines with buy-and-hold (BAH) benchmarks. All curves are normalized to start from 1.0, so the figure focuses on relative cumulative performance rather than initial capital. The GARCH-Bollinger curve uses validation-selected contrarian parameters on the original test set. The LGBM curve uses the validation-selected risk-managed equity curve and is compared with BAH over the night-test period. The GRPO curve uses the dynamic-risk equity curve and is compared with BAH over its corresponding day-test period.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{bah_strategy_cumulative_curves_lgbm_validbest.png}
+    \caption{Buy-and-hold benchmark comparison for the three strategy lines on their corresponding test periods. All curves are normalized to start from 1.0.}
+    \label{fig:bah-strategy-comparison}
+\end{figure}
+
+The benchmark comparison shows that each active strategy outperforms its corresponding BAH curve in the selected out-of-sample evaluation. However, this figure should be interpreted as a benchmark check rather than a direct ranking across strategies, because the three curves come from different strategy designs, risk controls, and test-period definitions.
+
 \subsection{Slippage Discussion}
 
 The project models slippage with a simplified one-point proxy. In live trading, slippage depends on order type, queue position, bid-ask spread, market depth, volatility, news timing, and whether the strategy needs to reverse directly from long to short or short to long. Slippage can be larger during night sessions, market open and close, lunch break restart, macro news, overseas shocks, and large price gaps. Therefore, the backtest should be interpreted as a bar-level execution approximation, not a full order-book simulation.
@@ -407,8 +425,8 @@ The project implements risk management at several levels. For LGBM, the risk man
 
 \begin{table}[H]
     \centering
-    \caption{Main dynamic risk parameters for GRPO.}
-    \label{tab:risk-params}
+    \caption{Main risk parameters for LGBM.}
+    \label{tab:lgbm-risk-params}
     \begin{tabular}{lr}
         \toprule
         Parameter & Value \\
@@ -468,6 +486,10 @@ Overall, the project supports a cautious view of quantitative strategy developme
 This project compares supervised learning, reinforcement learning, and traditional volatility-based technical trading on intraday HSI futures data. The LGBM strategy achieves the strongest raw test performance, especially for the original model, but its results require careful interpretation because high-frequency prediction is sensitive to overfitting and execution assumptions. The unconstrained model demonstrated striking profitability in backtests, with total returns surpassing an extremely high result, such results should be interpreted with considerable caution. The exceptionally high annualized returns are likely amplified by the annualization methodology applied to minute-bar data, where even modest per-bar profitability is scaled by a large number of trading periods per year. In practice, these figures tend to overstate economic viability due to unmodeled frictions, capacity constraints, and execution realities. The GRPO strategy performs poorly under fixed one-contract trading, but the dynamic balanced risk-management layer significantly improves its final equity and Sharpe ratio. The GARCH-Bollinger strategy is more interpretable and shows that contrarian band-breach rules can be more robust than validation-selected momentum rules in the final test period.
 
 The main lesson is that model complexity alone does not guarantee trading robustness. The final strategy quality depends on the full pipeline: data cleaning, chronological splitting, feature construction, validation discipline, transaction cost modeling, position sizing, drawdown control, and implementation feasibility. For real deployment, the next steps should include more conservative execution simulation, walk-forward validation, live paper trading, and broker-level risk-control integration.
+
+\section{Code Repository}
+
+The project code and supporting files are available at: \href{https://github.com/PeaHaWf/8020GroupProject}{PeaHaWf/8020GroupProject}.
 
 \section*{References}
 \addcontentsline{toc}{section}{References}
