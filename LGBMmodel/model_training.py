@@ -342,72 +342,65 @@ def simulate_trading(predictions, df_test, transaction_cost_rate=TRANSACTION_COS
     return positions, strategy_returns, cumulative_returns, trade_log
 
 
-def calculate_metrics(strategy_returns, positions):
+def calculate_metrics(strategy_returns, positions, df_test):
     """
-    计算评估指标：
-    - Log Return (总对数收益)
-    - Sharpe Ratio (年化)
-    - Max Drawdown
-    - 胜率 (Win Rate)
-    - 盈亏比 (Profit Factor)
-    - 年化收益率
-    - Calmar Ratio
+    计算评估指标（已改为动态年化）
+    - 根据 df_test 实际的 datetime 计算 avg_bars_per_day
+    - periods_per_year = avg_bars_per_day * 252
     """
     n = len(strategy_returns)
-    
+
+    # ==================== 动态计算年化参数 ====================
+    if 'datetime' in df_test.columns and len(df_test) > 0:
+        df_date = df_test.copy()
+        df_date['date'] = pd.to_datetime(df_date['datetime']).dt.date
+        bars_per_day = df_date.groupby('date').size()
+        avg_bars_per_day = bars_per_day.mean()
+        num_days = len(bars_per_day)
+        print(f"  [Dynamic Annualization] Avg bars/day: {avg_bars_per_day:.2f} "
+              f"(基于 {num_days} 个交易日)")
+    else:
+        avg_bars_per_day = 330.0
+        print("  [Warning] 无法计算 avg bars/day，使用默认 330")
+
+    trading_days_per_year = 252
+    periods_per_year = avg_bars_per_day * trading_days_per_year
+    # ========================================================
+
     # Log Return
     log_return = np.sum(np.log(1 + np.clip(strategy_returns, -0.99, None)))
-    
-    # Total Return
     total_return = np.exp(log_return) - 1
-    
-    # Annualized Return (假设每年约 250 个交易日 * 约 330 分钟 ≈ 82500 分钟)
-    # 实际计算基于样本量：每年 ≈ 250天 * 每日交易分钟数
-    # 使用广义方法：假设每年 trading minutes ≈ 250 * 6.5 * 60 ≈ 97500（含夜盘更多）
-    # 简化：每年约 100,000 分钟
-    annual_factor = 100_000 / n  # 年化系数
-    annual_return = (1 + total_return) ** annual_factor - 1
-    
+
+    # Annualized Return
+    annual_return = (1 + total_return) ** (periods_per_year / n) - 1 if n > 0 else 0.0
+
     # Sharpe Ratio (年化)
     mean_ret = np.mean(strategy_returns)
     std_ret = np.std(strategy_returns)
-    if std_ret > 0:
-        sharpe_ratio = mean_ret / std_ret * np.sqrt(n) * np.sqrt(annual_factor / (100_000 / n))
-        # 简化：sharpe_ratio = mean_ret / std_ret * sqrt(100000)
-        sharpe_ratio = mean_ret / std_ret * np.sqrt(100_000)
-    else:
-        sharpe_ratio = 0
-    
+    sharpe_ratio = (mean_ret / std_ret * np.sqrt(periods_per_year)) if std_ret > 0 else 0.0
+
     # Max Drawdown
     cumulative = np.cumprod(1 + strategy_returns)
     running_max = np.maximum.accumulate(cumulative)
     drawdowns = (cumulative - running_max) / running_max
-    max_drawdown = np.min(drawdowns)
-    
+    max_drawdown = np.min(drawdowns) if len(drawdowns) > 0 else 0.0
+
     # Win Rate
     trades = positions != 0
-    if np.sum(trades) > 0:
-        win_rate = np.mean(strategy_returns[trades] > 0)
-    else:
-        win_rate = 0
-    
+    win_rate = np.mean(strategy_returns[trades] > 0) if np.sum(trades) > 0 else 0.0
+
     # Profit Factor
     positive_rets = strategy_returns[trades][strategy_returns[trades] > 0]
     negative_rets = strategy_returns[trades][strategy_returns[trades] < 0]
-    if len(negative_rets) > 0 and np.sum(np.abs(negative_rets)) > 0:
-        profit_factor = np.sum(positive_rets) / np.sum(np.abs(negative_rets))
-    else:
-        profit_factor = np.inf if len(positive_rets) > 0 else 0
-    
+    profit_factor = (np.sum(positive_rets) / np.sum(np.abs(negative_rets))) if len(negative_rets) > 0 else (
+        np.inf if len(positive_rets) > 0 else 0.0)
+
     # Calmar Ratio
-    calmar_ratio = annual_return / abs(max_drawdown) if max_drawdown != 0 else 0
-    
+    calmar_ratio = annual_return / abs(max_drawdown) if max_drawdown != 0 else 0.0
+
     # Average trade return
-    if np.sum(trades) > 0:
-        avg_trade_return = np.mean(strategy_returns[trades])
-    else:
-        avg_trade_return = 0
-    
+    avg_trade_return = np.mean(strategy_returns[trades]) if np.sum(trades) > 0 else 0.0
+
     metrics = {
         'Log Return': log_return,
         'Total Return': total_return,
@@ -419,8 +412,8 @@ def calculate_metrics(strategy_returns, positions):
         'Calmar Ratio': calmar_ratio,
         'Avg Trade Return': avg_trade_return,
         'Total Trades': trade_log_count(positions),
+        'Avg Bars Per Day': float(avg_bars_per_day),  # 新增，方便查看
     }
-    
     return metrics
 
 
@@ -431,22 +424,25 @@ def trade_log_count(positions):
 
 
 def evaluate_on_test(model, X_test, df_test, scenario_name):
-    """在测试集上评估模型，返回指标和交易日志"""
+    """在测试集上评估模型"""
     predictions = model.predict(X_test)
     positions, strategy_rets, cum_rets, trade_log = simulate_trading(predictions, df_test)
-    metrics = calculate_metrics(strategy_rets, positions)
-    
-    print(f"\n  [{scenario_name}]")
-    print(f"    Log Return:       {metrics['Log Return']:.4f}")
-    print(f"    Total Return:     {metrics['Total Return']:.4%}")
-    print(f"    Annualized Return:{metrics['Annualized Return']:.4%}")
-    print(f"    Sharpe Ratio:     {metrics['Sharpe Ratio']:.4f}")
-    print(f"    Max Drawdown:     {metrics['Max Drawdown']:.4%}")
-    print(f"    Win Rate:         {metrics['Win Rate']:.4%}")
-    print(f"    Profit Factor:    {metrics['Profit Factor']:.4f}")
-    print(f"    Calmar Ratio:     {metrics['Calmar Ratio']:.4f}")
-    print(f"    Total Trades:     {metrics['Total Trades']}")
-    
+
+    # ←←← 关键修改：传入 df_test
+    metrics = calculate_metrics(strategy_rets, positions, df_test)
+
+    print(f"\n [{scenario_name}]")
+    print(f" Log Return: {metrics['Log Return']:.4f}")
+    print(f" Total Return: {metrics['Total Return']:.4%}")
+    print(f" Annualized Return: {metrics['Annualized Return']:.4%}")
+    print(f" Sharpe Ratio: {metrics['Sharpe Ratio']:.4f}")
+    print(f" Max Drawdown: {metrics['Max Drawdown']:.4%}")
+    print(f" Win Rate: {metrics['Win Rate']:.4%}")
+    print(f" Profit Factor: {metrics['Profit Factor']:.4f}")
+    print(f" Calmar Ratio: {metrics['Calmar Ratio']:.4f}")
+    print(f" Total Trades: {metrics['Total Trades']}")
+    print(f" Avg Bars/Day: {metrics['Avg Bars Per Day']:.1f}")
+
     return predictions, positions, strategy_rets, cum_rets, trade_log, metrics
 
 
