@@ -15,24 +15,24 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-python scripts/prepare_data.py
-python scripts/train_grpo.py
-python scripts/evaluate_models.py
-python scripts/risk_management.py
+python GRPO/scripts/prepare_data.py
+python GRPO/scripts/train_grpo.py
+python GRPO/scripts/evaluate_models.py
+python GRPO/scripts/risk_management.py
 ```
 
 For a quick smoke run:
 
 ```bash
-python scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
+python GRPO/scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
 ```
 
-The default training command uses the normal experiment setting in `src/config.py`: 30 epochs, group size 8, and 2048 steps per sampled episode.
+The default training command uses the normal experiment setting in `GRPO/src/config.py`: 30 epochs, group size 8, and 2048 steps per sampled episode.
 
 The risk management script now runs the balanced dynamic position sizing layer by default. You can override common risk parameters:
 
 ```bash
-python scripts/risk_management.py --risk-per-trade 0.003 --max-contracts 3
+python GRPO/scripts/risk_management.py --risk-per-trade 0.003 --max-contracts 3
 ```
 
 ## Main Outputs

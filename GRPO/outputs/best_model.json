@@ -1,11 +1,11 @@
 {
-  "model": "day_model",
-  "dataset": "day_test",
-  "max_drawdown": -0.12629279137160354,
-  "sharpe_ratio": -0.8300431037124562,
-  "log_return": -0.03142991934755124,
-  "total_pnl": -154570.0,
-  "final_equity": 4845430.0,
-  "turnover": 15407.0,
-  "trace_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\trace_day_model_on_day_test.csv"
+  "model": "night_model",
+  "dataset": "night_test",
+  "max_drawdown": -0.3635782493104581,
+  "sharpe_ratio": -10.087877972923076,
+  "log_return": -0.4469184723446104,
+  "total_pnl": -1802250.0,
+  "final_equity": 3197750.0,
+  "turnover": 22925.0,
+  "trace_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/trace_night_model_on_night_test.csv"
 }

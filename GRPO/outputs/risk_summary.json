@@ -1,6 +1,6 @@
 {
-  "selected_model": "day_model",
-  "selected_dataset": "day_test",
+  "selected_model": "night_model",
+  "selected_dataset": "night_test",
   "risk_method": "dynamic_balanced",
   "initial_capital": 5000000.0,
   "risk_config": {
@@ -15,27 +15,27 @@
     "min_volatility_points": 20.0
   },
   "metrics": {
-    "max_drawdown": -0.12037250294554236,
-    "sharpe_ratio": 3.4111694833710224,
-    "log_return": 0.2785805473777861,
-    "total_pnl": 1607190.0,
-    "final_equity": 6607190.0,
-    "turnover": 28816.0
+    "max_drawdown": -0.1206116578942219,
+    "sharpe_ratio": -2.617874128667383,
+    "log_return": -0.10627014545231768,
+    "total_pnl": -505710.0,
+    "final_equity": 4494290.0,
+    "turnover": 8976.0
   },
-  "equity_curve_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_equity_curve.csv",
-  "trade_ledger_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_trade_ledger.csv",
-  "dynamic_equity_curve_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_equity_curve.csv",
-  "dynamic_trade_ledger_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_trade_ledger.csv",
-  "dynamic_summary_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\dynamic_risk_summary.json",
-  "comparison_path": "C:\\Users\\90592\\Desktop\\HKU\\Semester 2\\STAT 8020 Quantitative strategies and algorithmic trading [2025]\\8020\\outputs\\risk_comparison.csv",
-  "number_of_trades": 4188,
+  "equity_curve_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/risk_equity_curve.csv",
+  "trade_ledger_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/risk_trade_ledger.csv",
+  "dynamic_equity_curve_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/dynamic_risk_equity_curve.csv",
+  "dynamic_trade_ledger_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/dynamic_risk_trade_ledger.csv",
+  "dynamic_summary_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/dynamic_risk_summary.json",
+  "comparison_path": "/Users/jayden/Desktop/8020 Algorithm trading/8020 project/8020GroupProject/GRPO/outputs/risk_comparison.csv",
+  "number_of_trades": 1856,
   "static_baseline_metrics": {
-    "max_drawdown": -0.12629279137160354,
-    "sharpe_ratio": -0.8300431037124562,
-    "log_return": -0.03142991934755124,
-    "total_pnl": -154570.0,
-    "final_equity": 4845430.0,
-    "turnover": 15407.0
+    "max_drawdown": -0.3635782493104581,
+    "sharpe_ratio": -10.087877972923076,
+    "log_return": -0.4469184723446104,
+    "total_pnl": -1802250.0,
+    "final_equity": 3197750.0,
+    "turnover": 22925.0
   },
-  "static_baseline_trades": 7704
+  "static_baseline_trades": 11463
 }

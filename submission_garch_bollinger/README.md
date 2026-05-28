@@ -12,7 +12,7 @@ This folder contains the GARCH-Bollinger traditional strategy line.
 Run from the project root:
 
 ```bash
-python code/garch_bollinger_first4_from_processed_data.py
+python submission_garch_bollinger/code/garch_bollinger_first4_from_processed_data.py
 ```
 
 Code files:

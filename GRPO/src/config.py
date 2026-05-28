@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+GRPO_DIR = PROJECT_ROOT / "GRPO"
 RAW_DATA_PATH = PROJECT_ROOT / "原始数据" / "hi1_20170701_20200609.csv"
 DATA_DIR = PROJECT_ROOT / "data"
-MODEL_DIR = PROJECT_ROOT / "models"
-OUTPUT_DIR = PROJECT_ROOT / "outputs"
+MODEL_DIR = GRPO_DIR / "models"
+OUTPUT_DIR = GRPO_DIR / "outputs"
 DOCS_DIR = PROJECT_ROOT / "docs"
 
 DATASET_NAMES = ("original", "day", "night")
