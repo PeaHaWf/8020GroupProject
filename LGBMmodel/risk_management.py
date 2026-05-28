@@ -322,7 +322,7 @@ def run_backtest_with_risk_management():
         return
     
     model = joblib.load(model_path)
-    print(f"  模型已加载: {model_path}")
+    print(f"  model loaded: {model_path}")
     
     # load test data and compute features
     from model_training import load_and_merge_data, compute_features, get_feature_columns
@@ -427,14 +427,14 @@ def run_backtest_with_risk_management():
         display_count = min(10, len(close_trades))
         for i in range(display_count):
             t = close_trades.iloc[i]
-            print(f"  交易#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
+            print(f"  transaction#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
                   f"({t['pnl_points']:+.0f}points) | capital remaining=${t['capital_after']:,.0f}")
         
         if len(close_trades) > 10:
             print(f"\n  --- last 10 trades ---")
             for i in range(max(0, len(close_trades)-10), len(close_trades)):
                 t = close_trades.iloc[i]
-                print(f"  交易#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
+                print(f"  transaction#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
                       f"({t['pnl_points']:+.0f}points) | capital remaining=${t['capital_after']:,.0f}")
     
     return rm, summary
