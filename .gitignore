@@ -1,3 +1,22 @@
 .vscode/
 .idea/
 *.log
+
+# Local OS/editor/cache files
+.DS_Store
+**/.DS_Store
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Local untracked experiment archive
+_local_untracked_archive/
+
+# LaTeX build intermediates
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+CLAUDE.md

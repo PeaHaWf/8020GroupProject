@@ -8,7 +8,7 @@
 5,000,000
 ```
 
-该假设定义在 `src/config.py` 的 `MarketConfig.initial_capital`：
+该假设定义在 `GRPO/src/config.py` 的 `MarketConfig.initial_capital`：
 
 ```python
 initial_capital: float = 5_000_000.0
@@ -20,7 +20,7 @@ initial_capital: float = 5_000_000.0
 
 新版风险管理默认使用均衡型动态仓位。模型只给出方向信号，风控层决定是否交易以及交易几张合约。
 
-参数定义在 `src/config.py` 的 `RiskConfig`：
+参数定义在 `GRPO/src/config.py` 的 `RiskConfig`：
 
 ```python
 risk_per_trade = 0.005
@@ -51,7 +51,7 @@ min_volatility_points = 20.0
 运行：
 
 ```bash
-python scripts/risk_management.py
+python GRPO/scripts/risk_management.py
 ```
 
 会读取 `outputs/best_model.json` 中选择出的实测模型，并在对应测试集上输出：
@@ -67,7 +67,7 @@ python scripts/risk_management.py
 命令行可覆盖部分风控参数：
 
 ```bash
-python scripts/risk_management.py --risk-per-trade 0.003 --max-contracts 3
+python GRPO/scripts/risk_management.py --risk-per-trade 0.003 --max-contracts 3
 ```
 
 ## 交易盈亏计算

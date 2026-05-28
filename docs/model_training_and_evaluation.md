@@ -8,11 +8,11 @@
 - `day_model`：使用 `data/day_train.csv`
 - `night_model`：使用 `data/night_train.csv`
 
-训练脚本为 `scripts/train_grpo.py`，核心实现位于 `src/grpo.py`。
+训练脚本为 `GRPO/scripts/train_grpo.py`，核心实现位于 `GRPO/src/grpo.py`。
 
 ## 环境设定
 
-交易环境位于 `src/trading_env.py`。
+交易环境位于 `GRPO/src/trading_env.py`。
 
 - 动作空间：`0=short`、`1=flat`、`2=long`
 - 每次只交易 1 张合约
@@ -20,7 +20,7 @@
 - 每次换仓扣除 transaction cost 和 slippage
 - 特征标准化参数由训练集计算并随模型保存，验证、测试和风控复用同一组参数
 
-默认参数在 `src/config.py` 的 `MarketConfig` 中修改：
+默认参数在 `GRPO/src/config.py` 的 `MarketConfig` 中修改：
 
 ```python
 contract_multiplier = 50.0
@@ -65,26 +65,26 @@ Log return：
 LogReturn = log(final_equity / initial_equity)
 ```
 
-指标实现在 `src/metrics.py`。
+指标实现在 `GRPO/src/metrics.py`。
 
 ## 复现命令
 
 ```bash
-python scripts/prepare_data.py
-python scripts/train_grpo.py
-python scripts/evaluate_models.py
-python scripts/risk_management.py
+python GRPO/scripts/prepare_data.py
+python GRPO/scripts/train_grpo.py
+python GRPO/scripts/evaluate_models.py
+python GRPO/scripts/risk_management.py
 ```
 
 如需快速测试训练流程：
 
 ```bash
-python scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
+python GRPO/scripts/train_grpo.py --epochs 1 --group-size 2 --episode-steps 256
 ```
 
 ## 评估组合
 
-`scripts/evaluate_models.py` 会评估以下五组：
+`GRPO/scripts/evaluate_models.py` 会评估以下五组：
 
 - `original_model` on `original_test`
 - `original_model` on `day_test`

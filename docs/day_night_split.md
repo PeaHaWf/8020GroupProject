@@ -19,14 +19,14 @@
 
 - 17:15 至次日 03:00
 
-该规则在 `src/data.py` 的 `split_day_night()` 中定义。如需修改交易时段，只需要调整该函数中的分钟数边界。
+该规则在 `GRPO/src/data.py` 的 `split_day_night()` 中定义。如需修改交易时段，只需要调整该函数中的分钟数边界。
 
 ## 输出文件
 
 运行：
 
 ```bash
-python scripts/prepare_data.py
+python GRPO/scripts/prepare_data.py
 ```
 
 会生成：
