@@ -360,7 +360,7 @@ def run_backtest_with_risk_management():
     print("=" * 80)
     print("  风险管理系统 - 模拟交易")
     print("=" * 80)
-    print(f"  初始资金: ¥{INITIAL_CAPITAL:,.0f}")
+    print(f"  初始资金: ${INITIAL_CAPITAL:,.0f}")
     print(f"  最大持仓比例: {MAX_POSITION_RATIO*100:.0f}%")
     print(f"  单笔最大亏损: {MAX_SINGLE_LOSS_RATIO*100:.1f}%")
     print(f"  日内最大回撤限制: {MAX_DAILY_DRAWDOWN_RATIO*100:.0f}%")
@@ -487,15 +487,15 @@ def run_backtest_with_risk_management():
         display_count = min(10, len(close_trades))
         for i in range(display_count):
             t = close_trades.iloc[i]
-            print(f"  交易#{i+1}: {t['direction']} | PnL=¥{t['net_pnl']:,.0f} "
-                  f"({t['pnl_points']:+.0f}点) | 资金余额=¥{t['capital_after']:,.0f}")
+            print(f"  交易#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
+                  f"({t['pnl_points']:+.0f}点) | 资金余额=${t['capital_after']:,.0f}")
         
         if len(close_trades) > 10:
             print(f"\n  --- 最后10笔交易 ---")
             for i in range(max(0, len(close_trades)-10), len(close_trades)):
                 t = close_trades.iloc[i]
-                print(f"  交易#{i+1}: {t['direction']} | PnL=¥{t['net_pnl']:,.0f} "
-                      f"({t['pnl_points']:+.0f}点) | 资金余额=¥{t['capital_after']:,.0f}")
+                print(f"  交易#{i+1}: {t['direction']} | PnL=${t['net_pnl']:,.0f} "
+                      f"({t['pnl_points']:+.0f}点) | 资金余额=${t['capital_after']:,.0f}")
     
     return rm, summary
 
