@@ -1,0 +1,12 @@
+Your report should include the following:
+1.	Introduction
+2.	Detailed description of your trading algo and its rationale 
+3.	Specification of in-sample, out-sample periods
+4.	Back-testing results and performance characteristics 
+5.	Optimization of trading parameters if there is any 
+6.	Comments on slippages which may occur in real trading
+7.	Implementation difficulty and problems that may arise from real time trading 
+8.	Risk management features for implementation
+9.	Whatever you think is relevant 
+10.	References
+11.	Conclusion
