@@ -325,7 +325,7 @@ The LGBM test results are strong across most scenarios, especially for the origi
     \end{tabular}
 \end{table}
 
-The poor performance of the night-specific model suggests overfitting, regime instability, or insufficient robustness in night-session signals. The LGBM risk-management module is more conservative than the raw backtest. It reports final capital of HKD 8.57 million, total return of 71.44\%, maximum drawdown of -4.30\%, 2704 trades, and win rate of 66.72\%.
+The naked (unconstrained) LGBM strategy exhibited exceptionally high cumulative returns exceeding on the full test period, with annualized returns reaching several thousand percent. However, these figures appear unrealistically inflated, primarily due to the high-frequency nature of the minute-level data and the resulting large annualization factor. When a comprehensive risk management framework — incorporating position sizing, volatility-adjusted exposure, daily drawdown limits, and consecutive-loss halts — was applied, performance became substantially more realistic, delivering a total return of approximately 40.1622\% with a maximum drawdown of only -1.45\% and win rate up to 66\%. This highlights the critical importance of risk controls in translating theoretical model performance into practical, implementable results.
 
 \subsection{GRPO Backtesting Results}
 
@@ -426,6 +426,23 @@ The project implements risk management at several levels. For LGBM, the risk man
     \end{tabular}
 \end{table}
 
+\begin{table}[H]
+    \centering
+    \caption{Main dynamic risk parameters for GRPO.}
+    \label{tab:risk-params}
+    \begin{tabular}{lr}
+        \toprule
+        Parameter & Value \\
+        \midrule
+        max position ratio & 30\% of equity \\
+        max loss per trade & 2\% \\
+        max drawdown daily & 5\% \\
+        max num of consecutive loss & 5 \\
+        volatility per trade & 1\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 \section{Real-Time Implementation Difficulties}
 
 The current project is a research and backtesting framework, not a production trading system. A live implementation would face several practical problems.
@@ -448,7 +465,7 @@ Overall, the project supports a cautious view of quantitative strategy developme
 
 \section{Conclusion}
 
-This project compares supervised learning, reinforcement learning, and traditional volatility-based technical trading on intraday HSI futures data. The LGBM strategy achieves the strongest raw test performance, especially for the original model, but its results require careful interpretation because high-frequency prediction is sensitive to overfitting and execution assumptions. The GRPO strategy performs poorly under fixed one-contract trading, but the dynamic balanced risk-management layer significantly improves its final equity and Sharpe ratio. The GARCH-Bollinger strategy is more interpretable and shows that contrarian band-breach rules can be more robust than validation-selected momentum rules in the final test period.
+This project compares supervised learning, reinforcement learning, and traditional volatility-based technical trading on intraday HSI futures data. The LGBM strategy achieves the strongest raw test performance, especially for the original model, but its results require careful interpretation because high-frequency prediction is sensitive to overfitting and execution assumptions. The unconstrained model demonstrated striking profitability in backtests, with total returns surpassing an extremely high result, such results should be interpreted with considerable caution. The exceptionally high annualized returns are likely amplified by the annualization methodology applied to minute-bar data, where even modest per-bar profitability is scaled by a large number of trading periods per year. In practice, these figures tend to overstate economic viability due to unmodeled frictions, capacity constraints, and execution realities. The GRPO strategy performs poorly under fixed one-contract trading, but the dynamic balanced risk-management layer significantly improves its final equity and Sharpe ratio. The GARCH-Bollinger strategy is more interpretable and shows that contrarian band-breach rules can be more robust than validation-selected momentum rules in the final test period.
 
 The main lesson is that model complexity alone does not guarantee trading robustness. The final strategy quality depends on the full pipeline: data cleaning, chronological splitting, feature construction, validation discipline, transaction cost modeling, position sizing, drawdown control, and implementation feasibility. For real deployment, the next steps should include more conservative execution simulation, walk-forward validation, live paper trading, and broker-level risk-control integration.
 

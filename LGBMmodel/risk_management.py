@@ -354,9 +354,7 @@ class RiskManager:
 # ============================================================
 
 def run_backtest_with_risk_management():
-    """
-    使用best_model (original_model_LGBM) 在 original_test 上进行模拟交易
-    """
+
     print("=" * 80)
     print("  风险管理系统 - 模拟交易")
     print("=" * 80)
@@ -380,7 +378,7 @@ def run_backtest_with_risk_management():
     # 加载original_test数据
     from model_training import load_and_merge_data, compute_features, get_feature_columns
     
-    _, test_data = load_and_merge_data('original')
+    _, test_data = load_and_merge_data('night')
     test_feat = compute_features(test_data)
     feature_cols = get_feature_columns(test_feat)
     X_test = test_feat[feature_cols]

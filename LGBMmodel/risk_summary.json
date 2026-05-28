@@ -1,13 +1,13 @@
 {
   "initial_capital": 5000000,
-  "final_capital": 8571798.620000133,
-  "total_return": 0.7143597240000267,
-  "total_pnl": 3571798.6200001333,
-  "peak_capital": 8955982.42500006,
-  "max_drawdown": -0.043048071859065215,
-  "total_trades": 2704,
-  "winning_trades": 1804,
-  "losing_trades": 900,
-  "win_rate": 0.6671597633136095,
-  "was_halted": false
+  "final_capital": 7008109.975000058,
+  "total_return": 0.40162199500001167,
+  "total_pnl": 2008109.9750000583,
+  "peak_capital": 7111303.20000005,
+  "max_drawdown": -0.014511155283041585,
+  "total_trades": 1242,
+  "winning_trades": 823,
+  "losing_trades": 419,
+  "win_rate": 0.6626409017713365,
+  "was_halted": true
 }
