@@ -40,7 +40,9 @@ This project studies whether intraday Hang Seng Index (HSI) futures prices conta
 
 The project compares three trading approaches. The first is a supervised learning strategy based on LightGBM (LGBM), which predicts next-bar returns from engineered price, volatility, volume, and calendar features. The second is a reinforcement learning strategy based on a GRPO-style policy optimization framework, where a policy network learns whether to be short, flat, or long from trading rewards. The third is a traditional GARCH-Bollinger strategy, which combines Bollinger Bands with GARCH conditional volatility, volume confirmation, and session-specific parameter selection.
 
-The report follows the style of the sample project reports: it starts from market theory and trading rationale, then defines strategy rules, describes in-sample and out-of-sample design, presents parameter optimization, and finally discusses backtesting results, slippage, risk management, and implementation difficulties.
+The day and night sessions are separated because HSI futures do not trade under one homogeneous intraday environment. The day session overlaps with the cash equity market and usually has deeper liquidity and more local market participation. The night session is more exposed to overseas information, thinner liquidity, wider effective spreads, and larger gap risk. A signal that works during regular trading hours may therefore behave differently at night. The project keeps the full original dataset as the main market view, but also evaluates day-only and night-only datasets to test whether session-specific calibration improves robustness.
+
+The report starts from market structure and trading rationale, then defines strategy rules, describes in-sample and out-of-sample design, presents parameter optimization, and finally discusses backtesting results, slippage, risk management, and implementation difficulties.
 
 \begin{figure}[H]
     \centering
@@ -130,6 +132,8 @@ The GARCH-Bollinger strategy is an interpretable benchmark. A standard Bollinger
 
 The one-period shift is essential: the band used for the decision at time $t$ must be known before observing the trading result at time $t$.
 
+The limitation of the standard Bollinger Band is that rolling standard deviation is a fixed-window historical estimate. During volatility clustering, it can react too slowly: after volatility suddenly increases, the window may still contain many low-volatility bars and the band can be too narrow; after volatility falls, old extreme bars may keep the band too wide. This directly affects trading because the strategy may generate too many signals in turbulent periods and too few signals after the market calms down.
+
 The project extends the band width using GARCH(1,1) conditional volatility:
 
 \begin{align}
@@ -143,17 +147,21 @@ Since $\sigma_t$ is return volatility, it is converted back to price scale:
     \mathrm{BandWidth}_t = k P_{t-1}\sigma_t.
 \end{equation}
 
+Compared with rolling standard deviation, GARCH updates volatility through the recent return shock and the previous conditional variance. The $\alpha$ term reacts to the latest shock, while the $\beta$ term captures volatility persistence. This is the main rationale for the GARCH-Bollinger extension: the band width can adapt to volatility clustering more directly than an equal-weight rolling window.
+
 Two signal interpretations are tested. The contrarian version treats a band breach as temporary overreaction and trades against the move. The momentum version treats it as a breakout and trades with the move. Some variants add volume confirmation:
 
 \begin{equation}
-    \mathrm{VolumeOK}_t = \mathbb{1}\left(V_t > \rho \cdot \mathrm{RollingMean}(V_t, w_v)_{t-1}\right).
+    \mathrm{VolumeOK}_t = I\left(V_t > \rho \cdot \mathrm{RollingMean}(V_t, w_v)_{t-1}\right).
 \end{equation}
 
 \section{Data Splitting and Experimental Design}
 
-The raw data are HSI futures one-minute bars from July 2017 to June 2020. The project constructs three datasets: the full original dataset, the day-session dataset, and the night-session dataset. Day session includes 09:15-12:00 and 13:00-16:30. Night session includes 17:15 to the next day 03:00.
+The project uses processed HSI futures one-minute bars from July 2017 to June 2020. It constructs three datasets: the full original dataset, the day-session dataset, and the night-session dataset. Day session includes 09:15-12:00 and 13:00-16:30. Night session includes 17:15 to the next day 03:00.
 
 All datasets are sorted chronologically and split into train, validation, and test sets with a 3:1:1 ratio. Chronological splitting is necessary because random splitting would allow future regimes to leak into the training process.
+
+The project does not create separate bull-market and bear-market subsamples. The sample period contains an earlier upward phase and a later flatter or more volatile phase, but the group treats the full 2017-2020 period as one continuous HSI futures trading sample rather than manually classifying market regimes. This is a simplifying assumption. It avoids adding subjective regime labels and keeps the train-validation-test design consistent across LGBM, GRPO, and GARCH-Bollinger, but it also means that regime robustness is assessed indirectly through out-of-sample performance rather than through a separate bull/bear regime experiment.
 
 \begin{figure}[H]
     \centering
@@ -220,7 +228,29 @@ The GRPO experiment uses 30 epochs, group size 8, 2048 steps per sampled episode
 
 \subsection{GARCH-Bollinger Parameter Optimization}
 
-The GARCH-Bollinger strategy uses validation-only grid search. The grid includes bar frequency, moving-average window, band multiplier, maximum holding bars for momentum strategies, volume window, and volume ratio. The selection rule prioritizes validation Sharpe ratio, then less severe drawdown and lower turnover. Zero-turnover candidates are not selected unless every candidate in the family does not trade.
+The GARCH-Bollinger strategy uses validation-only grid search. The grid includes bar frequency, moving-average window, band multiplier, maximum holding bars for momentum strategies, volume window, and volume ratio. The tested values are:
+
+\begin{table}[H]
+    \centering
+    \caption{GARCH-Bollinger parameter grid.}
+    \label{tab:garch-grid}
+    \begin{tabular}{llp{7.2cm}}
+        \toprule
+        Parameter & Values & Role \\
+        \midrule
+        Bar frequency & 5, 15, 20 minutes & Resampled bar interval. \\
+        Moving-average window & 20, 40, 60 bars & Center line of the Bollinger band. \\
+        Band multiplier $k$ & 1.5, 2.0, 2.5 & Controls band width. Smaller $k$ creates narrower bands and more signals; larger $k$ creates wider bands and fewer signals. \\
+        Maximum holding bars & 5, 10, 20 bars & Exit rule for momentum variants. \\
+        Volume window & 20, 40 bars & Look-back window for average volume. \\
+        Volume ratio & 0.8, 1.0, 1.2 & Entry filter for volume-confirmed variants. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The selection rule prioritizes validation Sharpe ratio, then less severe drawdown and lower turnover. Zero-turnover candidates are not selected unless every candidate in the family does not trade.
+
+The GARCH-Bollinger experiment is organized around two signal interpretations and three parameter sources. The two interpretations are momentum and contrarian. Momentum candidates are selected from GARCH-Bollinger momentum variants, with or without volume confirmation. Contrarian candidates are selected from standard Bollinger contrarian, GARCH-Bollinger contrarian, and GARCH-Bollinger contrarian with volume confirmation. The three parameter sources are original, day, and night. For each source, the best momentum setting and the best contrarian setting are selected on validation data only. In final testing, original-source parameters are evaluated on original, day, and night test sets, while day-source and night-source parameters are evaluated on their corresponding test sets. This creates five parameter-test settings and ten directional test rows, but all choices are fixed before the test results are observed.
 
 \begin{figure}[H]
     \centering
@@ -255,6 +285,17 @@ The backtests include transaction cost and slippage proxies. The common futures 
 \end{table}
 
 The accounting conventions differ across implementations. GRPO reports HKD PnL using futures multiplier and initial capital. LGBM reports return-based metrics and also has a separate risk-management module. GARCH-Bollinger reports ratio returns for the technical strategy tests. Therefore, the results should be compared directionally rather than treated as perfectly identical measurement systems.
+
+For GARCH-Bollinger, the backtest uses ratio returns rather than capital or wealth. The executed position is the previous bar's target position, which prevents using a signal and its return in the same bar:
+
+\begin{align}
+    \mathrm{ExecutedPosition}_t &= \mathrm{TargetPosition}_{t-1},\\
+    \mathrm{CloseReturn}_t &= \frac{P_t}{P_{t-1}} - 1,\\
+    \mathrm{CostReturn}_t &= \frac{|\mathrm{ExecutedPosition}_t-\mathrm{ExecutedPosition}_{t-1}| \cdot \mathrm{CostPointsPerSide}}{P_{t-1}},\\
+    \mathrm{StrategyReturn}_t &= \mathrm{ExecutedPosition}_t \cdot \mathrm{CloseReturn}_t - \mathrm{CostReturn}_t.
+\end{align}
+
+The current GARCH-Bollinger setting uses $\mathrm{CostPointsPerSide}=1.0$. Moving from flat to long has turnover 1, while flipping from long to short has turnover 2 because the old position must be closed and the opposite position opened.
 
 \subsection{LGBM Backtesting Results}
 
@@ -322,7 +363,7 @@ The dynamic layer sizes positions using equity risk budget and recent volatility
 
 \subsection{GARCH-Bollinger Backtesting Results}
 
-The GARCH-Bollinger validation results favored momentum strategies with volume confirmation, but out-of-sample test results were more favorable to contrarian rules. This is an important regime-risk result.
+For GARCH-Bollinger, we first use the validation set to select the best momentum setting and the best contrarian setting for each dataset. After the parameters are selected, they are fixed and tested on the out-of-sample test set. The table compares these fixed validation-selected settings. For each dataset combination, we report both the momentum result and the contrarian result, so the table has ten rows in total. Validation Sharpe is included to show the selection evidence, while test return and test Sharpe report final out-of-sample performance. The test set is used only for evaluation, not for selecting parameters.
 
 \begin{figure}[H]
     \centering
@@ -333,22 +374,28 @@ The GARCH-Bollinger validation results favored momentum strategies with volume c
 
 \begin{table}[H]
     \centering
-    \caption{Representative GARCH-Bollinger test results.}
-    \label{tab:garch-test}
-    \begin{tabular}{llrrr}
+    \caption{GARCH-Bollinger directional test results: five settings by two interpretations.}
+    \label{tab:garch-directional}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{lllrrrrr}
         \toprule
-        Variant & Test Dataset & Return & Sharpe & Max DD \\
+        Parameter source & Test set & Direction & Validation-selected variant & Val. Sharpe & Test return & Test Sharpe & Max DD \\
         \midrule
-        Standard BB contrarian & Original & 4.88\% & 1.92 & -2.13\% \\
-        Standard BB contrarian & Day & 1.47\% & 2.24 & -0.58\% \\
-        Standard BB contrarian & Night & 4.02\% & 1.93 & -2.13\% \\
-        GARCH BB contrarian volume & Day & 3.44\% & 1.96 & -1.43\% \\
-        GARCH BB momentum volume & Day & 1.64\% & 0.89 & -1.97\% \\
+        Original & Original & Momentum & GARCH BB momentum volume & 1.56 & 0.59\% & 0.41 & -1.45\% \\
+        Original & Original & Contrarian & Standard BB contrarian & 1.27 & 4.88\% & 1.92 & -2.13\% \\
+        Original & Day & Momentum & GARCH BB momentum volume & 1.56 & 0.00\% & 0.00 & 0.00\% \\
+        Original & Day & Contrarian & Standard BB contrarian & 1.27 & 1.47\% & 2.24 & -0.58\% \\
+        Original & Night & Momentum & GARCH BB momentum volume & 1.56 & 0.40\% & 0.34 & -1.45\% \\
+        Original & Night & Contrarian & Standard BB contrarian & 1.27 & 4.02\% & 1.93 & -2.13\% \\
+        Day & Day & Momentum & GARCH BB momentum volume & 3.03 & 1.64\% & 0.89 & -1.97\% \\
+        Day & Day & Contrarian & GARCH BB contrarian volume & 1.30 & 3.44\% & 1.96 & -1.43\% \\
+        Night & Night & Momentum & GARCH BB momentum volume & 2.09 & 0.58\% & 0.26 & -3.22\% \\
+        Night & Night & Contrarian & Standard BB contrarian & 1.04 & 4.02\% & 1.93 & -2.13\% \\
         \bottomrule
-    \end{tabular}
+    \end{tabular}}
 \end{table}
 
-The result is not simply that GARCH is always better than standard Bollinger Bands, or that momentum is always worse than contrarian trading. A more precise interpretation is that the validation period behaved more like a breakout environment, while the test period, especially late 2019 to early 2020, was more favorable to mean reversion after band breaches.
+This table is the main GARCH-Bollinger finding. Momentum with volume confirmation had strong validation Sharpe, especially for day and night parameters, which suggests that the validation period rewarded breakout-style signals. However, in the final test period, contrarian rules delivered higher Sharpe ratios in all five directional settings. The result is therefore not simply that GARCH is always better than standard Bollinger Bands, or that momentum is always worse than contrarian trading. A more precise interpretation is that the validation period behaved more like a breakout environment, while the test period, especially late 2019 to early 2020, was more favorable to mean reversion after band breaches.
 
 \subsection{Slippage Discussion}
 
@@ -410,6 +457,7 @@ The main lesson is that model complexity alone does not guarantee trading robust
 
 \begin{enumerate}
     \item Bollinger, J. (2002). \textit{Bollinger on Bollinger Bands}. McGraw-Hill.
+    \item Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. \textit{Journal of Econometrics}, 31(3), 307-327.
     \item Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of United Kingdom inflation. \textit{Econometrica}, 50(4), 987-1007.
     \item Fama, E. F. (1970). Efficient capital markets: A review of theory and empirical work. \textit{Journal of Finance}, 25(2), 383-417.
     \item Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., and Liu, T. Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. \textit{Advances in Neural Information Processing Systems}.
