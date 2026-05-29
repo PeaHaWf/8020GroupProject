@@ -1,35 +1,35 @@
-# 日盘与夜盘划分方法
+# Day/Night Session Split
 
-## 数据来源
+## Data Source
 
-原始数据文件为 `原始数据/hi1_20170701_20200609.csv`，字段包括 `date`、`time`、`hi1_open`、`hi1_high`、`hi1_low`、`hi1_close`、`hi1_volume`。
+Raw data file: `data/hi1_20170701_20200609.csv`. Columns: `date`, `time`, `hi1_open`, `hi1_high`, `hi1_low`, `hi1_close`, `hi1_volume`.
 
-## 时间戳处理
+## Timestamp Handling
 
-`date` 使用 `YYYYMMDD` 格式，`time` 使用 `HHMMSS` 格式。脚本会先将两列合并为 `timestamp`，再按时间顺序排序。
+`date` uses `YYYYMMDD` format, `time` uses `HHMMSS` format. The script concatenates both into a `timestamp` column and sorts chronologically.
 
-## 划分规则
+## Split Rules
 
-日盘：
+Day session:
 
-- 09:15 至 12:00
-- 13:00 至 16:30
+- 09:15 to 12:00
+- 13:00 to 16:30
 
-夜盘：
+Night session:
 
-- 17:15 至次日 03:00
+- 17:15 to 03:00 (next day)
 
-该规则在 `GRPO/src/data.py` 的 `split_day_night()` 中定义。如需修改交易时段，只需要调整该函数中的分钟数边界。
+Defined in `GRPO/src/data.py:split_day_night()`. To change session boundaries, adjust the minute thresholds in that function.
 
-## 输出文件
+## Output Files
 
-运行：
+Run:
 
 ```bash
 python GRPO/scripts/prepare_data.py
 ```
 
-会生成：
+Generates:
 
 - `data/original_data.csv`
 - `data/day_data.csv`
@@ -39,4 +39,4 @@ python GRPO/scripts/prepare_data.py
 - `data/*_test.csv`
 - `data/split_summary.csv`
 
-所有 train/validation/test 均按时间顺序以 3:1:1 划分。
+All train/validation/test splits are chronological with a 3:1:1 ratio.
